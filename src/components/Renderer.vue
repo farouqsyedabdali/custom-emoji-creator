@@ -1,52 +1,96 @@
 <script setup>
-import { ref } from 'vue';
-import CharacterMenu from './CharacterMenu.vue';
-import defaultFace from '../assets/defaultface.svg';
+import { ref } from "vue";
+import CharacterMenu from "./CharacterMenu.vue";
+import defaultFace from "../assets/defaultface.svg";
 
-// Separate refs for each component
 const selectedFace = ref(null);
 const selectedEyes = ref(null);
 const selectedMouth = ref(null);
 
-const activeMenu = ref('faces');
+const activeMenu = ref("faces");
 
 const handleSelection = (option) => {
-  if (option.type === 'face') {
+  if (option.type === "face") {
     selectedFace.value = option;
-  } else if (option.type === 'eyes') {
+  } else if (option.type === "eyes") {
     selectedEyes.value = option;
-  } else if (option.type === 'mouth') {
+  } else if (option.type === "mouth") {
     selectedMouth.value = option;
   }
 };
+
+const downloadPNG = async () => {
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+
+  canvas.width = 400;
+  canvas.height = 300;
+
+  ctx.fillStyle = "white";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  const loadImage = (src) => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+      img.src = src;
+    });
+  };
+
+  try {
+    if (selectedFace.value) {
+      const face = await loadImage(selectedFace.value.image);
+      ctx.drawImage(face, 50, 50, 300, 300);
+    }
+
+    if (selectedEyes.value) {
+      const eyes = await loadImage(selectedEyes.value.image);
+      ctx.drawImage(eyes, 50, 50, 300, 300);
+    }
+
+    if (selectedMouth.value) {
+      const mouth = await loadImage(selectedMouth.value.image);
+      ctx.drawImage(mouth, 50, 50, 300, 300);
+    }
+
+    // Create download link
+    const link = document.createElement("a");
+    link.download = "character.png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+
+  } catch (error) {
+    console.error("Error generating PNG:", error);
+  }
+};
+
 </script>
 
 <template>
   <div class="grid grid-cols-2 gap-4 container mx-auto p-4">
     <div class="flex items-center justify-center">
       <div class="fixed-display">
-        <!-- Base face layer -->
-        <img 
+        <img
           v-if="selectedFace"
-          :src="selectedFace.image" 
+          :src="selectedFace.image"
           alt="face"
           class="w-48 h-48 absolute"
         />
-        <!-- Eyes layer -->
-        <img 
+        <img
           v-if="selectedEyes"
-          :src="selectedEyes.image" 
+          :src="selectedEyes.image"
           alt="eyes"
           class="w-32 h-32 absolute z-10 eyes-position"
         />
-        <!-- Mouth layer -->
-        <img 
+        <img
           v-if="selectedMouth"
-          :src="selectedMouth.image" 
+          :src="selectedMouth.image"
           alt="mouth"
           class="w-32 h-32 absolute z-10 mouth-position"
         />
       </div>
+      
     </div>
 
     <CharacterMenu
@@ -54,7 +98,15 @@ const handleSelection = (option) => {
       @update:menu="activeMenu = $event"
       @select="handleSelection"
     />
+    <button 
+        @click="downloadPNG"
+        class="btn btn-primary mt-4 w-max m-auto"
+        :disabled="!selectedFace"
+      >
+        Download PNG
+      </button>
   </div>
+  
 </template>
 
 <style scoped>
@@ -72,10 +124,10 @@ const handleSelection = (option) => {
 }
 
 .eyes-position {
-  transform: translateY(-25px); /* Adjust this value to move eyes up/down */
+  transform: translateY(-25px);
 }
 
 .mouth-position {
-  transform: translateY(30px); /* Adjust this value to move mouth up/down */
+  transform: translateY(30px);
 }
 </style>

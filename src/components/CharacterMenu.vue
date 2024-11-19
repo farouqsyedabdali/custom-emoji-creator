@@ -1,4 +1,3 @@
-<!-- CharacterMenu.vue -->
 <script setup>
 import { computed } from 'vue';
 import angryFace from '../assets/angryface.svg';
@@ -9,6 +8,7 @@ import heartEyes from '../assets/hearteyes.svg';
 import starEyes from '../assets/stareyes.svg';
 import smile from '../assets/smile.svg';
 import lipSmile from '../assets/lipsmile.svg';
+import tongueMouth from '../assets/tonguemouth.svg';
 
 const props = defineProps(['activeMenu']);
 const emit = defineEmits(['update:menu', 'select']);
@@ -59,6 +59,11 @@ const mouthOptions = [
         id: 8,
         image: lipSmile,
         type: 'mouth'
+    },
+    {
+        id: 9,
+        image: tongueMouth,
+        type: 'mouth'
     }
 ];
 
@@ -76,7 +81,6 @@ const options = computed(() => {
 
 <template>
   <div class="character-menu">
-    <!-- Menu Navigation -->
     <ul class="menu menu-vertical lg:menu-horizontal bg-base-200 rounded-box mb-4">
       <li v-for="item in menuItems" :key="item" class="mx-2">
         <a 
@@ -88,7 +92,6 @@ const options = computed(() => {
       </li>
     </ul>
 
-    <!-- Options Panel -->
     <div class="options-container">
       <button
         v-for="option in options"

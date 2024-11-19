@@ -13,5 +13,4 @@ const baseFace = ref(null)
 </template>
 
 <style scoped>
-/* Scoped styles for this component */
 </style>
